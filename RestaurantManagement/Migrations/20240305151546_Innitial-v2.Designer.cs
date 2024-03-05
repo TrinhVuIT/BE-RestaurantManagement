@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RestaurantManagement.Data;
 
@@ -11,9 +12,11 @@ using RestaurantManagement.Data;
 namespace RestaurantManagement.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240305151546_Innitial-v2")]
+    partial class Innitialv2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,11 +89,6 @@ namespace RestaurantManagement.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -142,10 +140,6 @@ namespace RestaurantManagement.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -395,16 +389,17 @@ namespace RestaurantManagement.Migrations
 
             modelBuilder.Entity("RestaurantManagement.Data.Entities.User", b =>
                 {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Avatar")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("Birthday")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(max)");
@@ -415,11 +410,23 @@ namespace RestaurantManagement.Migrations
                     b.Property<long?>("DistrictId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("FullName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("NgayCapNhat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NguoiCapNhat")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NguoiTao")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("PositionId")
                         .HasColumnType("bigint");
@@ -430,8 +437,13 @@ namespace RestaurantManagement.Migrations
                     b.Property<int?>("Sex")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<long?>("WardsId")
                         .HasColumnType("bigint");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("CountryId");
 
@@ -443,7 +455,7 @@ namespace RestaurantManagement.Migrations
 
                     b.HasIndex("WardsId");
 
-                    b.HasDiscriminator().HasValue("User");
+                    b.ToTable("ApplicationUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
