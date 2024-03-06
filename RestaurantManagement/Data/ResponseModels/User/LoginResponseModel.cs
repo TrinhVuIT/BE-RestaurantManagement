@@ -2,6 +2,6 @@
 {
     public class LoginResponseModel : ApiResponse
     {
-        public UserResponse User { get; set; }
+        public UserResponse? User { get; set; }
     }
 }

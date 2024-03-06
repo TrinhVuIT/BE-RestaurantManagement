@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using RestaurantManagement.Data.Entities.Address;
+using System.ComponentModel.DataAnnotations;
 using static RestaurantManagement.Commons.Enums;
 
 namespace RestaurantManagement.Data.Entities
@@ -22,6 +23,11 @@ namespace RestaurantManagement.Data.Entities
         //Chức vụ
         public virtual Position? Position { get; set; }
         public string? Avatar { get; set; }
+        public bool IsDeleted { get; set; }
+        public string? NguoiTao { get; set; }
+        public DateTime? NgayTao { get; set; }
+        public string? NguoiCapNhat { get; set; }
+        public DateTime? NgayCapNhat { get; set; }
         public bool IsActive { get; set; } = true;
     }
 }

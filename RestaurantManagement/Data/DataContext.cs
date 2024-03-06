@@ -16,5 +16,6 @@ namespace RestaurantManagement.Data
         public DbSet<Provinces> Provinces { get; set; }
         public DbSet<Districts> Districts { get; set; }
         public DbSet<Wards> Wards { get; set; }
+        public DbSet<RefreshToken> RefreshToken { get; set; }
     }
 }
