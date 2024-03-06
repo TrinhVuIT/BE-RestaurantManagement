@@ -4,7 +4,7 @@
     {
         public class AppSettingKeys
         {
-            public const string DEFAULT_CONTROLLER_ROUTE = "api/[controller]";
+            public const string DEFAULT_CONTROLLER_ROUTE = "api/[controller]/[action]";
             public const string DEFAULT_CONNECTION = "DefaultConnection";
             public const string JWT_SECRET = "JWT:Secret";
             public const string JWT_VALIDAUDIENCE = "JWT:ValidAudience";
