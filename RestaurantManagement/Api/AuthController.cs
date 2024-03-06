@@ -6,7 +6,7 @@ using RestaurantManagement.Data.RequestModels.User;
 
 namespace RestaurantManagement.Api
 {
-    [Route(Constants.AppSettingKeys.DEFAULT_CONNECTION)]
+    [Route(Constants.AppSettingKeys.DEFAULT_CONTROLLER_ROUTE)]
     [ApiController]
     public class AuthController : ControllerBase
     {

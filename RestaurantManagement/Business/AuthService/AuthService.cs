@@ -54,7 +54,7 @@ namespace RestaurantManagement.Business.AuthService
                 var userRoles = await _userManager.GetRolesAsync(user);
 
                 //gen token
-                var token = await _baseService.GenerateTokenUser(user, userRoles);
+                var token = await GenerateTokenUser(user, userRoles);
 
                 return new LoginResponseModel
                 {
@@ -99,14 +99,23 @@ namespace RestaurantManagement.Business.AuthService
             throw new NotImplementedException();
         }
 
-        public Task<ApiResponse> SignOutAsync()
+        public async Task<ApiResponse> SignOutAsync()
         {
-            throw new NotImplementedException();
+            await _signInManager.SignOutAsync();
+            return new ApiResponse
+            {
+                Success = true,
+                Message = "Logout success!"
+            };
         }
 
         public Task<bool> VerifyUserToken(string email, string token, bool isDecodeToken)
         {
             throw new NotImplementedException();
+        }
+        private async Task<TokenModel> GenerateTokenUser(User user, IList<string> roles)
+        {
+            return await _baseService.GenerateTokenUser(user, roles);
         }
     }
 }

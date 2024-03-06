@@ -13,6 +13,7 @@
             public const string TIMEZONE = "TimeZone";
             public const string PASSWORDSYS = "PasswordSystem";
             public const string URLAPI = "UrlAPI";
+            public const string PERMISSIONS = "Permissions";
         }
         public class ExceptionMessage
         {

@@ -6,9 +6,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 using System.Text;
 using RestaurantManagement.Commons;
-using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace RestaurantManagement.Business.BaseService
 {
@@ -28,9 +28,7 @@ namespace RestaurantManagement.Business.BaseService
 
         public async Task<TokenModel> GenerateTokenUser(User user, IList<string> roles)
         {
-            var jwtTokenHandler = new JwtSecurityTokenHandler();
-
-            var secretKeyBytes = Encoding.UTF8.GetBytes(_configuration[Constants.AppSettingKeys.JWT_SECRET] ?? string.Empty);
+            var secretKeyBytes = Encoding.UTF8.GetBytes(_configuration[Constants.AppSettingKeys.JWT_SECRET]!);
 
             var tokenDescription = new SecurityTokenDescriptor
             {
@@ -46,12 +44,14 @@ namespace RestaurantManagement.Business.BaseService
 
                     //roles
                 }!),
-                Expires = DateTime.Now.AddMinutes(double.Parse(_configuration[Constants.AppSettingKeys.JWT_EXPIREMINUTES] ?? string.Empty)),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKeyBytes), SecurityAlgorithms.HmacSha512Signature)
+                Expires = DateTime.Now.AddMinutes(double.Parse(_configuration[Constants.AppSettingKeys.JWT_EXPIREMINUTES]!)),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKeyBytes), SecurityAlgorithms.Aes128CbcHmacSha256)
             };
 
             foreach (var role in roles)
                 tokenDescription?.Subject?.AddClaim(new Claim(ClaimTypes.Role, role));
+
+            var jwtTokenHandler = new JwtSecurityTokenHandler();
             var token = jwtTokenHandler.CreateToken(tokenDescription);
             var accessToken = jwtTokenHandler.WriteToken(token);
             var refreshToken = GenerateRefreshToken();
@@ -66,10 +66,10 @@ namespace RestaurantManagement.Business.BaseService
                 IsUsed = false,
                 IsRevoked = false,
                 IssuedAt = DateTime.Now,
-                ExpiredAt = DateTime.Now.AddMinutes(double.Parse(_configuration[Constants.AppSettingKeys.JWT_EXPIREMINUTES] ?? string.Empty))
+                ExpiredAt = DateTime.Now.AddMinutes(double.Parse(_configuration[Constants.AppSettingKeys.JWT_EXPIREMINUTES]!))
             };
 
-            await _context.AddAsync(refreshTokenEntity);
+            await _context.RefreshToken.AddAsync(refreshTokenEntity);
             await _context.SaveChangesAsync();
 
             return new TokenModel
