@@ -1,5 +1,4 @@
-﻿using RestaurantManagement.Data.Entities;
-using RestaurantManagement.Data.RequestModels.Email;
+﻿using RestaurantManagement.Data.RequestModels.Email;
 
 namespace RestaurantManagement.Business.EmailCofigServices
 {
