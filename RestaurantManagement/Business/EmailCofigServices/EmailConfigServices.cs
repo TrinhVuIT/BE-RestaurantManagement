@@ -22,7 +22,7 @@ namespace RestaurantManagement.Business.EmailCofigServices
         {
             try
             {
-                _context.Add(new EmailConfig
+                _context.EmailConfig.Add(new EmailConfig
                 {
                     Code = newEmail.Code,
                     Email = newEmail.Email,
@@ -32,7 +32,7 @@ namespace RestaurantManagement.Business.EmailCofigServices
                     Tittle = newEmail.Tittle,
                     Content = newEmail.Content
                 });
-                return _context.SaveChanges() > 0;
+                return await _context.SaveChangesAsync() > 0;
             }
             catch
             {
@@ -46,9 +46,9 @@ namespace RestaurantManagement.Business.EmailCofigServices
             if (deleteEmail != null)
             {
                 deleteEmail.IsDeleted = true;
-                _context.Update(deleteEmail);
+                _context.EmailConfig.Update(deleteEmail);
 
-                return _context.SaveChanges() > 0;
+                return await _context.SaveChangesAsync() > 0;
             }
             else
             {
@@ -68,9 +68,9 @@ namespace RestaurantManagement.Business.EmailCofigServices
                 emailConfig.Password = updateEmail.Password;
                 emailConfig.Tittle = updateEmail.Tittle;
                 emailConfig.Content = updateEmail.Content;
-                _context.Update(emailConfig);
+                _context.EmailConfig.Update(emailConfig);
 
-                return _context.SaveChanges() > 0;
+                return await _context.SaveChangesAsync() > 0;
             }
             else
             {
