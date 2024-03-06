@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using RestaurantManagement.Business.BaseService;
+using RestaurantManagement.Business.EmailCofigServices;
 using RestaurantManagement.Commons;
 using RestaurantManagement.Data;
 using RestaurantManagement.Data.Entities;
 using RestaurantManagement.Data.RequestModels.User;
 using RestaurantManagement.Data.ResponseModels.User;
+using System.Text;
 
 namespace RestaurantManagement.Business.AuthService
 {
@@ -15,13 +18,15 @@ namespace RestaurantManagement.Business.AuthService
         private readonly IConfiguration _configuration;
         private readonly SignInManager<User> _signInManager;
         private readonly IBaseService _baseService;
-        public AuthService(DataContext context, UserManager<User> userManager, IBaseService baseService, IConfiguration configuration, SignInManager<User> signInManager)
+        private readonly IEmailConfigServices _emailConfigServices;
+        public AuthService(DataContext context, UserManager<User> userManager, IEmailConfigServices emailConfigServices, IBaseService baseService, IConfiguration configuration, SignInManager<User> signInManager)
         {
             _context = context;
             _userManager = userManager;
             _configuration = configuration;
             _signInManager = signInManager;
             _baseService = baseService;
+            _emailConfigServices = emailConfigServices;
 
         }
 
@@ -72,33 +77,6 @@ namespace RestaurantManagement.Business.AuthService
                 Data = null
             };
         }
-        public Task<bool> ChangePassword(string userName, ChangePasswordModel model)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> ForgotPassword(ForgotPasswordModel model)
-        {
-            throw new NotImplementedException();
-        }
-
-
-
-        public Task<bool> ResetPassword(ResetPasswordModel model)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> SetPassword(string email, SetPasswordModel model)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> SetPasswordByAdmin(string email, SetPasswordModel model)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<ApiResponse> SignOutAsync()
         {
             await _signInManager.SignOutAsync();
@@ -108,10 +86,125 @@ namespace RestaurantManagement.Business.AuthService
                 Message = "Logout success!"
             };
         }
-
-        public Task<bool> VerifyUserToken(string email, string token, bool isDecodeToken)
+        public async Task<bool> ChangePassword(string userName, ChangePasswordModel model)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByNameAsync(userName);
+            if(user == null)
+                throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, nameof(userName)));
+
+            var changePassword = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+            if(!changePassword.Succeeded)
+                throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, nameof(userName)));
+
+            return changePassword.Succeeded;
+        }
+
+
+        public async Task<bool> ForgotPassword(ForgotPasswordModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if(user == null)
+                throw new Exception(string.Format(Constants.ExceptionMessage.NOT_FOUND, nameof(model.Email)));
+
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+            var fullName = user?.FullName ?? user?.UserName;
+            var result = await _emailConfigServices.SendEmailForgotPasswordAsync(fullName!, model.Email, code);
+            if(!result)
+                throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, nameof(model.Email)));
+
+            return result;
+        }
+
+
+
+        public async Task<bool> ResetPassword(ResetPasswordModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                throw new Exception(string.Format(Constants.ExceptionMessage.NOT_FOUND, nameof(model.Email)));
+            }
+            if (model?.Token == null)
+            {
+                throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, "Token"));
+            }
+            model.Token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(model.Token));
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            if (!result.Succeeded)
+            {
+                throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, "Token"));
+            }
+
+            return result.Succeeded;
+        }
+
+        public async Task<bool> SetPassword(string email, SetPasswordModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, nameof(email)));
+            }
+            var hasPassword = await _userManager.HasPasswordAsync(user);
+            if (!hasPassword)
+            {
+                var result = await _userManager.AddPasswordAsync(user, model.NewPassword);
+                if (!result.Succeeded)
+                {
+                    throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, nameof(email)));
+                }
+
+                return result.Succeeded;
+            }
+            return false;
+        }
+
+        public async Task<bool> SetPasswordByAdmin(string email, SetPasswordModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, nameof(email)));
+            }
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            if (string.IsNullOrEmpty(token))
+            {
+                throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, nameof(token)));
+            }
+            var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
+            if (!result.Succeeded)
+            {
+                throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, nameof(email)));
+            }
+
+            return result.Succeeded;
+        }
+
+        public async Task<bool> VerifyUserToken(string email, string token, bool isDecodeToken)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new Exception(string.Format(Constants.ExceptionMessage.NOT_FOUND, nameof(email)));
+            }
+            if (token == null)
+            {
+                throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, "token"));
+            }
+            if (isDecodeToken)
+            {
+                token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+            }
+
+            var purpose = UserManager<User>.ResetPasswordTokenPurpose;
+            if (!await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.PasswordResetTokenProvider, purpose, token))
+            {
+                throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, "token"));
+            }
+
+            return true;
         }
         private async Task<TokenModel> GenerateTokenUser(User user, IList<string> roles)
         {

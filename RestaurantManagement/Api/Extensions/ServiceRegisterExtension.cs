@@ -1,5 +1,6 @@
 ﻿using RestaurantManagement.Business.AuthService;
 using RestaurantManagement.Business.BaseService;
+using RestaurantManagement.Business.EmailCofigServices;
 
 namespace RestaurantManagement.Api.Extensions
 {
@@ -9,6 +10,7 @@ namespace RestaurantManagement.Api.Extensions
         {
             services.AddTransient<IAuthService, AuthService>();
             services.AddScoped<IBaseService, BaseService>();
+            services.AddScoped<IEmailConfigServices, EmailConfigServices>();
         }
     }
 }

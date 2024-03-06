@@ -45,7 +45,7 @@ namespace RestaurantManagement.Business.BaseService
                     //roles
                 }!),
                 Expires = DateTime.Now.AddMinutes(double.Parse(_configuration[Constants.AppSettingKeys.JWT_EXPIREMINUTES]!)),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKeyBytes), SecurityAlgorithms.Aes128CbcHmacSha256)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKeyBytes), SecurityAlgorithms.Aes256CbcHmacSha512)
             };
 
             foreach (var role in roles)

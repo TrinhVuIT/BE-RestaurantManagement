@@ -18,6 +18,7 @@ namespace RestaurantManagement.Data
         public DbSet<Districts> Districts { get; set; }
         public DbSet<Wards> Wards { get; set; }
         public DbSet<RefreshToken> RefreshToken { get; set; }
+        public DbSet<EmailConfig> EmailConfig { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.EnableSensitiveDataLogging();
