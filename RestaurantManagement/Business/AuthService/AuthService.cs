@@ -3,27 +3,23 @@ using Microsoft.AspNetCore.WebUtilities;
 using RestaurantManagement.Business.BaseService;
 using RestaurantManagement.Business.EmailCofigServices;
 using RestaurantManagement.Commons;
-using RestaurantManagement.Data;
 using RestaurantManagement.Data.Entities;
 using RestaurantManagement.Data.RequestModels.User;
 using RestaurantManagement.Data.ResponseModels.User;
+using System.Data;
 using System.Text;
 
 namespace RestaurantManagement.Business.AuthService
 {
     public class AuthService : IAuthService
     {
-        private readonly DataContext _context;
         private readonly UserManager<User> _userManager;
-        private readonly IConfiguration _configuration;
         private readonly SignInManager<User> _signInManager;
         private readonly IBaseService _baseService;
         private readonly IEmailConfigServices _emailConfigServices;
-        public AuthService(DataContext context, UserManager<User> userManager, IEmailConfigServices emailConfigServices, IBaseService baseService, IConfiguration configuration, SignInManager<User> signInManager)
+        public AuthService(UserManager<User> userManager, IEmailConfigServices emailConfigServices, IBaseService baseService, SignInManager<User> signInManager)
         {
-            _context = context;
             _userManager = userManager;
-            _configuration = configuration;
             _signInManager = signInManager;
             _baseService = baseService;
             _emailConfigServices = emailConfigServices;
@@ -59,7 +55,7 @@ namespace RestaurantManagement.Business.AuthService
                 var userRoles = await _userManager.GetRolesAsync(user);
 
                 //gen token
-                var token = await GenerateTokenUser(user, userRoles);
+                var token = await _baseService.GenerateTokenUser(user, userRoles);
 
                 return new LoginResponseModel
                 {
@@ -205,10 +201,6 @@ namespace RestaurantManagement.Business.AuthService
             }
 
             return true;
-        }
-        private async Task<TokenModel> GenerateTokenUser(User user, IList<string> roles)
-        {
-            return await _baseService.GenerateTokenUser(user, roles);
         }
     }
 }

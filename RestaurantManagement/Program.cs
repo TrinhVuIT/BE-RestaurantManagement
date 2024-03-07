@@ -92,6 +92,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredLength = 6; // Số ký tự tối thiểu của password
     options.Password.RequiredUniqueChars = 1; // Số ký tự riêng biệt
 });
+
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddTransient<ExceptionHandlerMiddleWare>();
 builder.Services.AddTransient<JwtMiddleWare>();
@@ -102,6 +103,8 @@ builder.Services.AddSignalR();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseDbMigration();
+app.UseDataSeeding(app.Environment.IsDevelopment());
 
 app.UseSwagger();
 app.UseSwaggerUI();

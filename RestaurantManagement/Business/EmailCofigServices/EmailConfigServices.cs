@@ -11,11 +11,9 @@ namespace RestaurantManagement.Business.EmailCofigServices
     {
         private readonly DataContext _context;
         private readonly ILogger<EmailConfigServices> _logger;
-        private readonly IHttpContextAccessor _httpContext;
-        public EmailConfigServices(DataContext context, IHttpContextAccessor httpContext, ILogger<EmailConfigServices> logger)
+        public EmailConfigServices(DataContext context, ILogger<EmailConfigServices> logger)
         {
             _context = context;
-            _httpContext = httpContext;
             _logger = logger;
         }
         public async Task<bool> AddNewEmailConfig(EmailConfigRequestModel newEmail)
@@ -24,7 +22,6 @@ namespace RestaurantManagement.Business.EmailCofigServices
             {
                 _context.EmailConfig.Add(new EmailConfig
                 {
-                    Code = newEmail.Code,
                     Email = newEmail.Email,
                     Host = newEmail.Host,
                     Port = newEmail.Port,
@@ -61,7 +58,6 @@ namespace RestaurantManagement.Business.EmailCofigServices
             var emailConfig = GetById(id).FirstOrDefault();
             if (emailConfig != null)
             {
-                emailConfig.Code = updateEmail.Code;
                 emailConfig.Email = updateEmail.Email;
                 emailConfig.Host = updateEmail.Host;
                 emailConfig.Port = updateEmail.Port;

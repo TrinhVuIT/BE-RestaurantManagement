@@ -2,7 +2,6 @@
 {
     public class EmailConfigRequestModel
     {
-        public string Code { get; set; }
         public string Tittle { get; set; }
         public string Content { get; set; }
         public string Email { get; set; }
