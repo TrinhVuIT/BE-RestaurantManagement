@@ -27,6 +27,7 @@ namespace RestaurantManagement.Data
         public DbSet<StockIn> StockIn { get; set; }
         public DbSet<Supplier> Supplier { get; set; }
         public DbSet<Order> Order { get; set; }
+        public DbSet<IngredientDetail> IngredientDetail { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.EnableSensitiveDataLogging();

@@ -3,6 +3,5 @@
     public class GetPagedRecipeRequestModel : BasePaginationRequestModel
     {
         public string? FoodName { get; set; }
-        public string? IngredientName { get; set;}
     }
 }
