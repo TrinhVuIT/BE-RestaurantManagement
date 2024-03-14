@@ -19,6 +19,14 @@ namespace RestaurantManagement.Data
         public DbSet<Wards> Wards { get; set; }
         public DbSet<RefreshToken> RefreshToken { get; set; }
         public DbSet<EmailConfig> EmailConfig { get; set; }
+        public DbSet<Food> Food { get; set; }
+        public DbSet<Ingredient> Ingredient { get; set; }
+        public DbSet<PurchaseOrder> PurchaseOrder { get; set; }
+        public DbSet<Recipe> Recipe { get; set; }
+        public DbSet<StockOut> StockOut { get; set; }
+        public DbSet<StockIn> StockIn { get; set; }
+        public DbSet<Supplier> Supplier { get; set; }
+        public DbSet<Order> Order { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.EnableSensitiveDataLogging();

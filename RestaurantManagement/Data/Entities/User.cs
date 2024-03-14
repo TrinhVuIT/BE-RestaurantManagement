@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using RestaurantManagement.Data.Entities.Address;
-using System.ComponentModel.DataAnnotations;
 using static RestaurantManagement.Commons.Enums;
 
 namespace RestaurantManagement.Data.Entities
