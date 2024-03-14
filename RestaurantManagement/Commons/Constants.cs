@@ -27,5 +27,11 @@
             public const string NOT_HAVE_PERMISSION = "Not enough permissions";
             public const string ALREADY_EXIST_IN = "{0} already exist in {1}";
         }
+
+        public class DefaultValue
+        {
+            public const int DEFAULT_PAGE_SIZE = 10;
+            public const int DEFAULT_PAGE_NO = 1;
+        }
     }
 }
