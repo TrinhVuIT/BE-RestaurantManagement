@@ -2,6 +2,7 @@
 using RestaurantManagement.Business.BaseService;
 using RestaurantManagement.Business.EmailCofigServices;
 using RestaurantManagement.Business.FoodServices;
+using RestaurantManagement.Business.FoodServices.IngredientService;
 
 namespace RestaurantManagement.Api.Extensions
 {
@@ -13,6 +14,7 @@ namespace RestaurantManagement.Api.Extensions
             services.AddScoped<IBaseService, BaseService>();
             services.AddScoped<IEmailConfigServices, EmailConfigServices>();
             services.AddScoped<IFoodService, FoodService>();
+            services.AddScoped<IIngredientService, IngredientService>();
         }
     }
 }
