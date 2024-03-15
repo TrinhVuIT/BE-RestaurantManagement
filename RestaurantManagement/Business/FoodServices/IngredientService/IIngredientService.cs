@@ -9,7 +9,7 @@ namespace RestaurantManagement.Business.FoodServices.IngredientService
         Task<bool> CreateNew(IngredientRequestModel model);
         Task<bool> Delete(long id);
         Task<bool> Update(long id, IngredientRequestModel model);
-        Task<Ingredient> GetById(long id);
+        Task<Ingredient?> GetById(long id);
         Task<BasePaginationResponseModel<Ingredient>> GetPaged(GetPagedIngredientRequestModel model);
     }
 }

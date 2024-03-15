@@ -35,7 +35,7 @@ namespace RestaurantManagement.Business.FoodServices.IngredientService
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<Ingredient> GetById(long id)
+        public async Task<Ingredient?> GetById(long id)
         {
             return await _context.Ingredient.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == id);
         }

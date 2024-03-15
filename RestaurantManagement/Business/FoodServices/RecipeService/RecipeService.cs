@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RestaurantManagement.Commons;
 using RestaurantManagement.Data;
+using RestaurantManagement.Data.Entities;
 using RestaurantManagement.Data.RequestModels.Food;
 using RestaurantManagement.Data.ResponseModels;
 using RestaurantManagement.Data.ResponseModels.FoodResponseModel;
@@ -15,22 +16,34 @@ namespace RestaurantManagement.Business.FoodServices.RecipeService
         {
             _context = context;
         }
-        public Task<bool> CreateNew(CreateRecipeRequestModel model)
+        public async Task<bool> CreateNew(RecipeRequestModel model)
         {
-            throw new NotImplementedException();
+            var food = await _context.Food.FirstOrDefaultAsync(r => !r.IsDeleted && r.Id == model.FoodId); ;
+            if (food == null)
+                throw new Exception(string.Format(ExceptionMessage.NOT_FOUND, nameof(model.FoodId)));
+
+            var newRecipe = new Recipe()
+            {
+                Food = food,
+                RecipeName = model.RecipeName,
+                Step = model.Step,
+                Description = model.Description,
+            };
+            _context.Recipe.Add(newRecipe);
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> Delete(long id)
         {
             var res = await _context.Recipe.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == id);
-            if(res == null)
+            if (res == null)
                 throw new Exception(string.Format(ExceptionMessage.NOT_FOUND, nameof(id)));
             res.IsDeleted = true;
             _context.Update(res);
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<RecipeResponseModel> GetById(long id)
+        public async Task<RecipeResponseModel?> GetById(long id)
         {
             return await GetAll().FirstOrDefaultAsync(x => x.Id == id);
         }
@@ -44,17 +57,37 @@ namespace RestaurantManagement.Business.FoodServices.RecipeService
                 query = ApplySearch(query, model);
 
                 var totalItem = 0;
-                if(model.PageSize > 0)
+                if (model.PageSize > 0)
                 {
                     query = query.ApplyPaging(model.PageNo, model.PageSize, out totalItem);
                 }
                 List<RecipeResponseModel> result = query.ToList();
                 return new BasePaginationResponseModel<RecipeResponseModel>(model.PageNo, model.PageSize, result, totalItem);
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 await Console.Out.WriteLineAsync(ex.ToString());
                 throw;
             }
+        }
+
+        public async Task<bool> Update(long id, RecipeRequestModel model)
+        {
+            var updateRecipe = await _context.Recipe.Where(x => !x.IsDeleted && x.Id == id).FirstOrDefaultAsync();
+            if (updateRecipe == null)
+                throw new Exception(string.Format(ExceptionMessage.NOT_FOUND, nameof(id)));
+
+            var food = await _context.Food.FirstOrDefaultAsync(r => !r.IsDeleted && r.Id == model.FoodId);
+            if (food == null)
+                throw new Exception(string.Format(ExceptionMessage.NOT_FOUND, nameof(model.FoodId)));
+
+            updateRecipe.Food = food;
+            updateRecipe.RecipeName = model.RecipeName;
+            updateRecipe.Step = model.Step;
+            updateRecipe.Description = model.Description;
+
+            _context.Recipe.Update(updateRecipe);
+            return await _context.SaveChangesAsync() > 0;
         }
 
         private IQueryable<RecipeResponseModel> ApplySearch(IQueryable<RecipeResponseModel> query, GetPagedRecipeRequestModel model)
@@ -100,7 +133,11 @@ namespace RestaurantManagement.Business.FoodServices.RecipeService
                             Unit = r.Unit
                         }).ToList(),
                     Step = x.Step,
-                    Description = x.Description
+                    Description = x.Description,
+                    NgayTao = x.NgayTao,
+                    NgayCapNhat = x.NgayCapNhat,
+                    NguoiTao = x.NguoiTao,
+                    NguoiCapNhat = x.NguoiCapNhat,
                 }).AsQueryable();
         }
     }

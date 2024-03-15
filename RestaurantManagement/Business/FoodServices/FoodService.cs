@@ -50,7 +50,7 @@ namespace RestaurantManagement.Business.FoodServices
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<Food> GetById(long id)
+        public async Task<Food?> GetById(long id)
         {
             var result = await _context.Food.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
             return result;
