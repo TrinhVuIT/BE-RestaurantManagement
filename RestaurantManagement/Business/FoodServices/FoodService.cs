@@ -22,7 +22,7 @@ namespace RestaurantManagement.Business.FoodServices
                 FoodDescription = model.FoodDescription,
                 FoodPrice = model.FoodPrice,
             };
-            await _context.AddAsync(newFood);
+            await _context.Food.AddAsync(newFood);
             return await _context.SaveChangesAsync() > 0;
         }
 
@@ -32,8 +32,21 @@ namespace RestaurantManagement.Business.FoodServices
             if (food == null)
                 throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, nameof(id)));
 
+            var recipeDelete = await _context.Recipe.Where(x => !x.IsDeleted && x.Id == id).ToListAsync();
+            if (recipeDelete != null && recipeDelete.Count > 0)
+            {
+                foreach (var item in recipeDelete)
+                {
+                    var ingredientDetail = _context.IngredientDetail.Where(x => !x.IsDeleted && x.Recipe.Id == item.Id).ToList();
+                    ingredientDetail.ForEach(x => x.IsDeleted = true);
+                    _context.IngredientDetail.UpdateRange(ingredientDetail);
+                }
+                recipeDelete.ForEach(x => x.IsDeleted = true);
+                _context.Recipe.UpdateRange(recipeDelete);
+            }
+
             food.IsDeleted = true;
-            _context.Update(food);
+            _context.Food.Update(food);
             return await _context.SaveChangesAsync() > 0;
         }
         public async Task<bool> Update(long id, FoodRequestModel model)
@@ -46,7 +59,7 @@ namespace RestaurantManagement.Business.FoodServices
             updateFood.FoodDescription = model.FoodDescription;
             updateFood.FoodPrice = model.FoodPrice;
 
-            _context.Update(updateFood);
+            _context.Food.Update(updateFood);
             return await _context.SaveChangesAsync() > 0;
         }
 

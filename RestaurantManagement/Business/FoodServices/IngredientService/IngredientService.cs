@@ -21,17 +21,21 @@ namespace RestaurantManagement.Business.FoodServices.IngredientService
                 IngredientName = model.IgredientName,
                 Exp = model.Exp
             };
-            _context.Add(newIngredient);
+            _context.Ingredient.Add(newIngredient);
             return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> Delete(long id)
         {
             var res = await GetById(id);
-            if(res ==  null)
+            if (res == null)
                 throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, nameof(id)));
+
+            var ingredientDetail = await _context.IngredientDetail.Where(x => !x.IsDeleted && x.Ingredient.Id == id).ToListAsync();
+            ingredientDetail.ForEach(x => x.IsDeleted = true);
             res.IsDeleted = true;
-            _context.Update(res);
+            _context.IngredientDetail.UpdateRange(ingredientDetail);
+            _context.Ingredient.Update(res);
             return await _context.SaveChangesAsync() > 0;
         }
 
@@ -45,27 +49,28 @@ namespace RestaurantManagement.Business.FoodServices.IngredientService
             try
             {
                 var query = _context.Ingredient.Where(x => !x.IsDeleted).AsQueryable();
-                query = query.OrderByDescending(x => x.NgayTao);
+                query = query.OrderByDescending(x => x.NgayCapNhat);
 
                 if (!string.IsNullOrEmpty(model.Keyword))
                 {
                     var keyword = model.Keyword.ToLower().Trim();
                     query = query.Where(e => EF.Functions.Like(e.IngredientName.ToLower(), keyword));
                 }
-                if(model.Exp.HasValue)
+                if (model.Exp.HasValue)
                 {
                     query = query.Where(x => x.Exp == model.Exp.Value);
                 }
 
                 var totalItem = 0;
-                if(model.PageSize > 0)
+                if (model.PageSize > 0)
                 {
                     query = query.ApplyPaging(model.PageNo, model.PageSize, out totalItem);
                 }
                 List<Ingredient> result = query.ToList();
                 return new BasePaginationResponseModel<Ingredient>(model.PageNo, model.PageSize, result, totalItem);
 
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 await Console.Out.WriteLineAsync(ex.ToString());
                 throw;
@@ -75,12 +80,12 @@ namespace RestaurantManagement.Business.FoodServices.IngredientService
         public async Task<bool> Update(long id, IngredientRequestModel model)
         {
             var res = await GetById(id);
-            if(res == null)
+            if (res == null)
                 throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, nameof(id)));
             res.IngredientName = model.IgredientName;
             res.Exp = model.Exp;
 
-            _context.Update(res);
+            _context.Ingredient.Update(res);
             return await _context.SaveChangesAsync() > 0;
         }
     }
