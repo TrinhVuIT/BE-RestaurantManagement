@@ -8,8 +8,8 @@ namespace RestaurantManagement.Business.OrderServices
     {
         Task<bool> CreateNew(OrderRequestModel model);
         Task<bool> Delete(long id);
-        Task<bool> Update(OrderRequestModel model);
-        Task<OrderResponseModel> GetById(long id);
+        Task<bool> Update(long id, OrderRequestModel model);
+        Task<OrderResponseModel?> GetById(long id);
         Task<BasePaginationResponseModel<OrderResponseModel>> GetPaged(GetPagedOrderRequestModel model);
     }
 }

@@ -4,9 +4,14 @@ namespace RestaurantManagement.Data.ResponseModels.Order
 {
     public class OrderResponseModel
     {
+        public long Id { get; set; }
         public SupplierMapper Supplier { get; set; }
         public DateTime? DeliveryAppointment { get; set; }
         public StatusOrder StatusOrder { get; set; }
+        public DateTime? NgayTao { get; set; }
+        public DateTime? NgayCapNhat { get; set; }
+        public string? NguoiTao { get; set; }
+        public string? NguoiCapNhat { get; set; }
     }
     public class SupplierMapper
     {
