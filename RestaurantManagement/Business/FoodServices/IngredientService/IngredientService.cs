@@ -40,7 +40,9 @@ namespace RestaurantManagement.Business.FoodServices.IngredientService
             orderDetail.ForEach(x => x.IsDeleted = true);
 
             res.IsDeleted = true;
+
             _context.IngredientDetail.UpdateRange(ingredientDetail);
+            _context.OrderDetail.UpdateRange(orderDetail);
             _context.Ingredient.Update(res);
             return await _context.SaveChangesAsync() > 0;
         }

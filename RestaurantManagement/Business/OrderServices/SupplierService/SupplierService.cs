@@ -32,7 +32,13 @@ namespace RestaurantManagement.Business.OrderServices.SupplierService
             var res = await GetById(id);
             if(res == null)
                 throw new Exception(string.Format(ExceptionMessage.NOT_FOUND, nameof(id)));
+
+            var order = await _context.Order.Include(x => x.Supplier).Where(x => !x.IsDeleted && x.Supplier.Id == id).ToListAsync();
+            order.ForEach(x => x.IsDeleted = true);
+
             res.IsDeleted = true;
+
+            _context.Order.UpdateRange(order);
             _context.Supplier.Update(res);
             return await _context.SaveChangesAsync() > 0;
         }
