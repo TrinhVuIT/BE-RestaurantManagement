@@ -31,8 +31,14 @@ namespace RestaurantManagement.Business.FoodServices.IngredientService
             if (res == null)
                 throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, nameof(id)));
 
-            var ingredientDetail = await _context.IngredientDetail.Where(x => !x.IsDeleted && x.Ingredient.Id == id).ToListAsync();
+            var ingredientDetail = await _context.IngredientDetail.Include(x => x.Ingredient)
+                .Where(x => !x.IsDeleted && x.Ingredient.Id == id).ToListAsync();
             ingredientDetail.ForEach(x => x.IsDeleted = true);
+
+            var orderDetail = await _context.OrderDetail.Include(x => x.Ingredient)
+                .Where(x => !x.IsDeleted && x.Ingredient.Id == id).ToListAsync();
+            orderDetail.ForEach(x => x.IsDeleted = true);
+
             res.IsDeleted = true;
             _context.IngredientDetail.UpdateRange(ingredientDetail);
             _context.Ingredient.Update(res);

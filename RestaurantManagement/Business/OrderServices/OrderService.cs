@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RestaurantManagement.Commons;
 using RestaurantManagement.Data;
 using RestaurantManagement.Data.Entities;
 using RestaurantManagement.Data.RequestModels.Order;
@@ -34,7 +35,7 @@ namespace RestaurantManagement.Business.OrderServices
 
         public async Task<bool> Delete(long id)
         {
-            var res = await _context.Order.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id ==  id);
+            var res = await _context.Order.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == id);
             if (res == null)
                 throw new Exception(string.Format(ExceptionMessage.NOT_FOUND, nameof(id)));
 
@@ -55,15 +56,53 @@ namespace RestaurantManagement.Business.OrderServices
             return await GetAll().FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Task<BasePaginationResponseModel<OrderResponseModel>> GetPaged(GetPagedOrderRequestModel model)
+        public async Task<BasePaginationResponseModel<OrderResponseModel>> GetPaged(GetPagedOrderRequestModel model)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var query = GetAll();
+
+                query = query.OrderByDescending(x => x.NgayCapNhat);
+
+                query = ApplySearchFillter(query, model);
+
+                var totalItem = 0;
+                if (model.PageSize > 0)
+                {
+                    query = query.ApplyPaging(model.PageNo, model.PageSize, out totalItem);
+                }
+                List<OrderResponseModel> result = query.ToList();
+                return new BasePaginationResponseModel<OrderResponseModel>(model.PageNo, model.PageSize, result, totalItem);
+
+            }
+            catch (Exception ex)
+            {
+                await Console.Out.WriteLineAsync(ex.ToString());
+                throw;
+            }
+        }
+
+        private IQueryable<OrderResponseModel> ApplySearchFillter(IQueryable<OrderResponseModel> query, GetPagedOrderRequestModel model)
+        {
+            if (!string.IsNullOrEmpty(model.Keyword))
+            {
+                var key = model.Keyword.ToLower().Trim();
+                query = query.Where(e => EF.Functions.Like(e.Supplier.SupplierName.ToLower(), key));
+            }
+
+            if (model.DeliveryAppointment.HasValue)
+                query = query.Where(e => e.DeliveryAppointment != null && e.DeliveryAppointment.Value.Date == model.DeliveryAppointment.Value.Date);
+
+            if(model.StatusOrder.HasValue)
+                query = query.Where(e => e.StatusOrder == model.StatusOrder.Value);
+
+            return query;
         }
 
         public async Task<bool> Update(long id, OrderRequestModel model)
         {
             var updateOrder = await _context.Order.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == id);
-            if(updateOrder == null)
+            if (updateOrder == null)
                 throw new Exception(string.Format(ExceptionMessage.NOT_FOUND, nameof(id)));
 
             var supplier = await _context.Supplier.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == model.SupplierId);

@@ -5,6 +5,8 @@ using RestaurantManagement.Business.FoodServices;
 using RestaurantManagement.Business.FoodServices.IngredientDetailService;
 using RestaurantManagement.Business.FoodServices.IngredientService;
 using RestaurantManagement.Business.FoodServices.RecipeService;
+using RestaurantManagement.Business.OrderServices;
+using RestaurantManagement.Business.OrderServices.OrderDetailService;
 using RestaurantManagement.Business.OrderServices.SupplierService;
 
 namespace RestaurantManagement.Api.Extensions
@@ -21,6 +23,8 @@ namespace RestaurantManagement.Api.Extensions
             services.AddScoped<IIngredientDetailService, IngredientDetailService>();
             services.AddScoped<IRecipeService, RecipeService>();
             services.AddScoped<ISupplierService, SupplierService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IOrderDetailService, OrderDetailService>();
         }
     }
 }
