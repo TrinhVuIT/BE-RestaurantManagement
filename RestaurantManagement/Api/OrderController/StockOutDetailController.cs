@@ -1,9 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RestaurantManagement.Business.OrderServices.StockOutDetailService;
+using RestaurantManagement.Commons;
 using RestaurantManagement.Data.RequestModels.Order;
 
 namespace RestaurantManagement.Api.OrderController
 {
+    [Route(Constants.AppSettingKeys.DEFAULT_CONTROLLER_ROUTE)]
+    [ApiController]
+    [Authorize]
     public class StockOutDetailController : ControllerBase
     {
         private readonly IStockOutDetailService _stockOutDetailService;
