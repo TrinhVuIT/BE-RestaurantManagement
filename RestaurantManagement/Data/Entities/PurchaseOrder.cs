@@ -7,11 +7,9 @@ namespace RestaurantManagement.Data.Entities
     public class PurchaseOrder : BaseEntityCommons
     {
         //Người mua hàng
-        public virtual User Customer { get; set; }
-        //Món ăn
-        public virtual Food Food { get; set; }
-        //Số lượng món ăn
-        public int Quantity { get; set; }
+        public virtual User? Customer { get; set; }
+        public string? CustomerOther { get; set; }
+        public string? AddressCustomerOther { get; set; }
         //Tổng giá tiền
         public decimal TotalPrice { get; set; }
         public StatusOrder Status { get; set; }
