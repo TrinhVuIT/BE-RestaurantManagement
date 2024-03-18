@@ -9,6 +9,8 @@ using RestaurantManagement.Business.OrderServices;
 using RestaurantManagement.Business.OrderServices.OrderDetailService;
 using RestaurantManagement.Business.OrderServices.StockInDetailService;
 using RestaurantManagement.Business.OrderServices.StockInService;
+using RestaurantManagement.Business.OrderServices.StockOutDetailService;
+using RestaurantManagement.Business.OrderServices.StockOutService;
 using RestaurantManagement.Business.OrderServices.SupplierService;
 
 namespace RestaurantManagement.Api.Extensions
@@ -29,6 +31,8 @@ namespace RestaurantManagement.Api.Extensions
             services.AddScoped<IOrderDetailService, OrderDetailService>();
             services.AddScoped<IStockInService, StockInService>();
             services.AddScoped<IStockInDetailService, StockInDetailService>();
+            services.AddScoped<IStockOutService, StockOutService>();
+            services.AddScoped<IStockOutDetailService, StockOutDetailService>();
         }
     }
 }
