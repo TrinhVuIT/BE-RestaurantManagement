@@ -19,6 +19,7 @@ namespace RestaurantManagement.Api.FileUploadController
             _uploadService = uploadService;
         }
         [HttpPost]
+        [Authorize]
         [DisableRequestSizeLimit]
         public async Task<IActionResult> UploadAvatar([Required] IFormFile file)
         {

@@ -35,18 +35,36 @@ namespace RestaurantManagement.Business.PurchaseOrderService.PurchaseOrderFoodSe
                 Quantity = model.Quantity,
             };
 
+            if (purchaseOrder!.TotalPrice == 0 && food.FoodPrice != null)
+                purchaseOrder.TotalPrice = model.Quantity * food.FoodPrice.Value;
+            if (purchaseOrder.TotalPrice > 0 && food.FoodPrice != null)
+            {
+                var newTotalPrice = model.Quantity * food.FoodPrice.Value;
+
+                purchaseOrder.TotalPrice = purchaseOrder.TotalPrice + newTotalPrice;
+            }
+
+            _context.PurchaseOrder.Update(purchaseOrder);
             _context.PurchaseOrderFood.Add(newPurchaseOrderFood);
             return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> Delete(long id)
         {
-            var purchaseOrderFood = await _context.PurchaseOrderFood.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == id);
+            var purchaseOrderFood = await _context.PurchaseOrderFood.Include(x => x.PurchaseOrder).Include(x => x.Food)
+                .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == id);
             if (purchaseOrderFood == null)
                 throw new Exception(string.Format(ExceptionMessage.NOT_FOUND, nameof(id)));
 
+            var purchaseOrder = await _context.PurchaseOrder.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == purchaseOrderFood.PurchaseOrder.Id);
+
+            var totalPrice = purchaseOrderFood.Quantity * purchaseOrderFood.Food.FoodPrice!.Value;
+
+            purchaseOrder!.TotalPrice = purchaseOrder.TotalPrice - totalPrice;
+
             purchaseOrderFood.IsDeleted = true;
 
+            _context.PurchaseOrder.Update(purchaseOrder);
             _context.PurchaseOrderFood.Update(purchaseOrderFood);
             return await _context.SaveChangesAsync() > 0;
         }
@@ -69,14 +87,15 @@ namespace RestaurantManagement.Business.PurchaseOrderService.PurchaseOrderFoodSe
                 }
 
                 var totalItem = 0;
-                if(model.PageSize > 0)
+                if (model.PageSize > 0)
                 {
-                    query = query.ApplyPaging(model.PageNo,model.PageSize, out totalItem);
+                    query = query.ApplyPaging(model.PageNo, model.PageSize, out totalItem);
                 }
                 var result = query.ToList();
                 return new BasePaginationResponseModel<PurchaseOrderFoodResponseModel>(model.PageNo, model.PageSize, result, totalItem);
 
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 await Console.Out.WriteLineAsync(ex.ToString());
                 throw;
@@ -85,7 +104,8 @@ namespace RestaurantManagement.Business.PurchaseOrderService.PurchaseOrderFoodSe
 
         public async Task<bool> Update(long id, UpdatePurchaseOrderFoodRequestModel model)
         {
-            var purchaseOrderFood = await _context.PurchaseOrderFood.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == id);
+            var purchaseOrderFood = await _context.PurchaseOrderFood.Include(x => x.PurchaseOrder).Include(x => x.Food)
+                .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == id);
             if (purchaseOrderFood == null)
                 throw new Exception(string.Format(ExceptionMessage.NOT_FOUND, nameof(id)));
 
@@ -93,9 +113,24 @@ namespace RestaurantManagement.Business.PurchaseOrderService.PurchaseOrderFoodSe
             if (food == null)
                 throw new Exception(string.Format(ExceptionMessage.NOT_FOUND, nameof(model.FoodId)));
 
+            var purchaseOrder = await _context.PurchaseOrder.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == purchaseOrderFood.PurchaseOrder.Id);
+
+            if (purchaseOrder!.TotalPrice == 0 && food.FoodPrice != null)
+                purchaseOrder.TotalPrice = model.Quantity * food.FoodPrice.Value;
+            if (purchaseOrder.TotalPrice > 0 && purchaseOrderFood.Food.FoodPrice != null && food.FoodPrice != null)
+            {
+                var currentTotalPrice = purchaseOrderFood.Quantity * purchaseOrderFood.Food.FoodPrice.Value;
+                var newTotalPrice = model.Quantity * food.FoodPrice.Value;
+
+                purchaseOrder.TotalPrice = purchaseOrder.TotalPrice - currentTotalPrice + newTotalPrice;
+
+            }
+
             purchaseOrderFood.Food = food;
             purchaseOrderFood.Quantity = model.Quantity;
 
+
+            _context.PurchaseOrder.Update(purchaseOrder);
             _context.PurchaseOrderFood.Update(purchaseOrderFood);
             return await _context.SaveChangesAsync() > 0;
         }
