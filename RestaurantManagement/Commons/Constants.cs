@@ -33,5 +33,11 @@
             public const int DEFAULT_PAGE_SIZE = 10;
             public const int DEFAULT_PAGE_NO = 1;
         }
+        public class FileConst
+        {
+            public const string FILE_UPLOAD = "FileUpload";
+            public const string FILE_NOT_FOUND = "File not found";
+            public const string OCTET_STREAM = "application/octet-stream";
+        }
     }
 }
