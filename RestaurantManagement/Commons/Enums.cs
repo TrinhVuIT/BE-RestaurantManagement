@@ -18,5 +18,12 @@
             Returned, // Đơn hàng đã được trả lại
             Refunde // Đơn hàng đã được hoàn tiền
         }
+
+        public enum Classification
+        {
+            Provinces = 1,
+            Districts,
+            Wards
+        }
     }
 }

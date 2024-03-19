@@ -1,5 +1,6 @@
 ﻿using RestaurantManagement.Data.Entities.Address;
 using RestaurantManagement.Data.RequestModels;
+using static RestaurantManagement.Commons.Enums;
 
 namespace RestaurantManagement.Business.AddressService
 {
@@ -10,5 +11,6 @@ namespace RestaurantManagement.Business.AddressService
         Task<List<Provinces>> GetListProvinces(long? countryId);
         Task<List<Districts>> GetListDistrictsByProvince(long provinceId);
         Task<List<Wards>> GetListWardsByDistrict(long districtId);
+        Task<bool> UploadProvincesDistrictsWardFromFileExcel(Classification classification, IFormFile file);
     }
 }

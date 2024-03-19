@@ -2,6 +2,7 @@
 using RestaurantManagement.Business.AddressService;
 using RestaurantManagement.Commons;
 using RestaurantManagement.Data.RequestModels;
+using static RestaurantManagement.Commons.Enums;
 
 namespace RestaurantManagement.Api.AddressController
 {
@@ -44,5 +45,22 @@ namespace RestaurantManagement.Api.AddressController
             var res = await _addressService.GetListWardsByDistrict(districtId);
             return Ok(res);
         }
+
+        [HttpPost]
+        [DisableRequestSizeLimit]
+        public async Task<IActionResult> UploadProvincesDistrictsWardFromFileExcel(Classification classification, IFormFile file)
+        {
+            if(classification == 0 || file == null)
+                return Ok(false);
+            try
+            {
+                var res = await _addressService.UploadProvincesDistrictsWardFromFileExcel(classification, file);
+                return Ok(res);
+            }catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
     }
 }
