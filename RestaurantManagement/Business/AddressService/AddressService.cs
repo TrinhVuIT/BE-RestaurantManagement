@@ -115,8 +115,8 @@ namespace RestaurantManagement.Business.AddressService
                         {
                             ProvinceCode = provinceCode,
                             ProvinceNameVNI = sheet.Cells[r, firstCol + 1].Value?.ToString()!,
-                            ProvinceNameEN = sheet.Cells[r, firstCol + 2].Value?.ToString()!,
-                            Level = sheet.Cells[r, firstCol + 3].Value.ToString()!,
+                            ProvinceNameEN = sheet.Cells[r, firstCol + 2].Value?.ToString() ?? "",
+                            Level = sheet.Cells[r, firstCol + 3].Value.ToString() ?? "",
                             Country = _context.Countries.FirstOrDefault(x => x.Id == countryId)!
                         };
 
@@ -137,8 +137,8 @@ namespace RestaurantManagement.Business.AddressService
                         {
                             DistrictCode = districtCode,
                             DistrictNameVNI = sheet.Cells[r, firstCol + 1].Value?.ToString()!,
-                            DistrictNameEN = sheet.Cells[r, firstCol + 2].Value?.ToString()!,
-                            Level = sheet.Cells[r, firstCol + 3].Value?.ToString()!,
+                            DistrictNameEN = sheet.Cells[r, firstCol + 2].Value?.ToString() ?? "",
+                            Level = sheet.Cells[r, firstCol + 3].Value?.ToString() ?? "",
                             Province = _context.Provinces.FirstOrDefault(x => x.ProvinceCode == provinceCode)!
                         };
                         listDistrict.Add(model);
@@ -158,8 +158,8 @@ namespace RestaurantManagement.Business.AddressService
                         {
                             WardCode = wardCode,
                             WardNameVNI = sheet.Cells[r, firstCol + 1].Value?.ToString()!,
-                            WardNameEN = sheet.Cells[r, firstCol + 2].Value?.ToString()!,
-                            Level = sheet.Cells[r, firstCol + 3].Value.ToString()!,
+                            WardNameEN = sheet.Cells[r, firstCol + 2].Value?.ToString() ?? "",
+                            Level = sheet.Cells[r, firstCol + 3].Value.ToString() ?? "",
                             District = _context.Districts.FirstOrDefault(x => x.DistrictCode == districtCode)!
                         };
                         listWards.Add(model);
@@ -167,7 +167,7 @@ namespace RestaurantManagement.Business.AddressService
                     await _context.Wards.AddRangeAsync(listWards);
                 }
 
-                return await _context.SaveChangesAsync() > 0;
+                return _context.SaveChanges() > 0;
             }
         }
     }
