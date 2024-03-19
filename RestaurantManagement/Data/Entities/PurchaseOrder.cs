@@ -13,6 +13,5 @@ namespace RestaurantManagement.Data.Entities
         //Tổng giá tiền
         public decimal TotalPrice { get; set; }
         public StatusOrder Status { get; set; }
-
     }
 }
