@@ -5,6 +5,7 @@ namespace RestaurantManagement.Data.Entities.Address
 {
     public class Provinces : BaseEntity
     {
+        //Mã Tỉnh Thành
         public string ProvinceCode { get; set; }
         public string ProvinceNameEN { get; set; }
         public string ProvinceNameVNI { get; set; }

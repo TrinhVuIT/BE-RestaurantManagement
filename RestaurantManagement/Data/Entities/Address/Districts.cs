@@ -5,6 +5,7 @@ namespace RestaurantManagement.Data.Entities.Address
 {
     public class Districts : BaseEntity
     {
+        //Mã Quận Huyện
         public string DistrictCode { get; set; }
         public string DistrictNameEN { get; set; }
         public string DistrictNameVNI { get; set;}

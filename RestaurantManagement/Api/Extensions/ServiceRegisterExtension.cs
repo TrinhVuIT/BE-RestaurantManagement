@@ -1,4 +1,5 @@
-﻿using RestaurantManagement.Business.AuthService;
+﻿using RestaurantManagement.Business.AddressService;
+using RestaurantManagement.Business.AuthService;
 using RestaurantManagement.Business.BaseService;
 using RestaurantManagement.Business.EmailCofigServices;
 using RestaurantManagement.Business.FileUploadService;
@@ -39,6 +40,7 @@ namespace RestaurantManagement.Api.Extensions
             services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
             services.AddScoped<IPurchaseOrderFoodService, PurchaseOrderFoodService>();
             services.AddScoped<IFileUploadService, FileUploadService>();
+            services.AddScoped<IAddressService , AddressService>();
         }
     }
 }
