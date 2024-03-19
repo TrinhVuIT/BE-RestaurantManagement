@@ -49,7 +49,7 @@ namespace RestaurantManagement.Business.EmailCofigServices
             }
             else
             {
-                throw new Exception(string.Format(Constants.ExceptionMessage.NOT_FOUND, nameof(deleteEmail.Id)));
+                throw new Exception(string.Format(Constants.ExceptionMessage.NOT_FOUND, nameof(id)));
             }
         }
 
@@ -70,7 +70,7 @@ namespace RestaurantManagement.Business.EmailCofigServices
             }
             else
             {
-                throw new Exception(string.Format(Constants.ExceptionMessage.NOT_FOUND, nameof(emailConfig.Email)));
+                throw new Exception(string.Format(Constants.ExceptionMessage.NOT_FOUND, nameof(id)));
             }
         }
         public async Task<bool> SendEmailForgotPasswordAsync(string fullNamse, string mail, string token)

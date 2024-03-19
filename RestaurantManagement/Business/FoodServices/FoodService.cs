@@ -30,7 +30,7 @@ namespace RestaurantManagement.Business.FoodServices
         {
             var food = await GetById(id);
             if (food == null)
-                throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, nameof(id)));
+                throw new Exception(string.Format(Constants.ExceptionMessage.NOT_FOUND, nameof(id)));
 
             var recipeDelete = await _context.Recipe.Where(x => !x.IsDeleted && x.Id == id).ToListAsync();
             if (recipeDelete != null && recipeDelete.Count > 0)
@@ -53,7 +53,7 @@ namespace RestaurantManagement.Business.FoodServices
         {
             var updateFood = await GetById(id);
             if (updateFood == null)
-                throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, nameof(id)));
+                throw new Exception(string.Format(Constants.ExceptionMessage.NOT_FOUND, nameof(id)));
 
             updateFood.FoodName = model.FoodName;
             updateFood.FoodDescription = model.FoodDescription;

@@ -86,7 +86,7 @@ namespace RestaurantManagement.Business.AuthService
         {
             var user = await _userManager.FindByNameAsync(userName);
             if(user == null)
-                throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, nameof(userName)));
+                throw new Exception(string.Format(Constants.ExceptionMessage.NOT_FOUND, nameof(userName)));
 
             var changePassword = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
             if(!changePassword.Succeeded)
