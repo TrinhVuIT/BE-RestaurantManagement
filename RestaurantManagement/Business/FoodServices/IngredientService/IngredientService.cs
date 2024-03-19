@@ -29,7 +29,7 @@ namespace RestaurantManagement.Business.FoodServices.IngredientService
         {
             var res = await GetById(id);
             if (res == null)
-                throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, nameof(id)));
+                throw new Exception(string.Format(Constants.ExceptionMessage.NOT_FOUND, nameof(id)));
 
             var ingredientDetail = await _context.IngredientDetail.Include(x => x.Ingredient)
                 .Where(x => !x.IsDeleted && x.Ingredient.Id == id).ToListAsync();
@@ -89,7 +89,7 @@ namespace RestaurantManagement.Business.FoodServices.IngredientService
         {
             var res = await GetById(id);
             if (res == null)
-                throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, nameof(id)));
+                throw new Exception(string.Format(Constants.ExceptionMessage.NOT_FOUND, nameof(id)));
             res.IngredientName = model.IgredientName;
             res.Exp = model.Exp;
 

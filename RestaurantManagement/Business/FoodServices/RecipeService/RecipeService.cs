@@ -38,6 +38,7 @@ namespace RestaurantManagement.Business.FoodServices.RecipeService
             var res = await _context.Recipe.FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == id);
             if (res == null)
                 throw new Exception(string.Format(ExceptionMessage.NOT_FOUND, nameof(id)));
+
             var ingredientDetail = await _context.IngredientDetail.Include(x => x.Ingredient)
                 .Where(x => !x.IsDeleted && x.Ingredient.Id == id).ToListAsync();
             ingredientDetail.ForEach(x => x.IsDeleted = true);
