@@ -4,7 +4,7 @@ using RestaurantManagement.Commons;
 using RestaurantManagement.Data.RequestModels;
 using static RestaurantManagement.Commons.Enums;
 
-namespace RestaurantManagement.Api.AddressController
+namespace RestaurantManagement.Api.Controllers.AddressController
 {
     [Route(Constants.AppSettingKeys.DEFAULT_CONTROLLER_ROUTE)]
     [ApiController]
@@ -34,13 +34,13 @@ namespace RestaurantManagement.Api.AddressController
             return Ok(res);
         }
         [HttpGet]
-        public async Task<IActionResult> GetListDistrictsByProvince([FromQuery]long provinceId)
+        public async Task<IActionResult> GetListDistrictsByProvince([FromQuery] long provinceId)
         {
             var res = await _addressService.GetListDistrictsByProvince(provinceId);
             return Ok(res);
         }
         [HttpGet]
-        public async Task<IActionResult> GetListWardsByDistrict([FromQuery]long districtId)
+        public async Task<IActionResult> GetListWardsByDistrict([FromQuery] long districtId)
         {
             var res = await _addressService.GetListWardsByDistrict(districtId);
             return Ok(res);
@@ -50,13 +50,14 @@ namespace RestaurantManagement.Api.AddressController
         [DisableRequestSizeLimit]
         public async Task<IActionResult> UploadProvincesDistrictsWardFromFileExcel(Classification classification, IFormFile file)
         {
-            if(classification == 0 || file == null)
+            if (classification == 0 || file == null)
                 return Ok(false);
             try
             {
                 var res = await _addressService.UploadProvincesDistrictsWardFromFileExcel(classification, file);
                 return Ok(res);
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }

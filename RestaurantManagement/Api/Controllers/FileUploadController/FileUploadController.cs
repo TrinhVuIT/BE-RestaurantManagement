@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantManagement.Business.FileUploadService;
-using RestaurantManagement.Data.Entities;
 using System.ComponentModel.DataAnnotations;
 using System.IO.Compression;
 using System.Security.Claims;
 using static RestaurantManagement.Commons.Constants;
 
-namespace RestaurantManagement.Api.FileUploadController
+namespace RestaurantManagement.Api.Controllers.FileUploadController
 {
     [Route(AppSettingKeys.DEFAULT_CONTROLLER_ROUTE)]
     [ApiController]

@@ -4,7 +4,7 @@ using RestaurantManagement.Business.EmailCofigServices;
 using RestaurantManagement.Commons;
 using RestaurantManagement.Data.RequestModels.Email;
 
-namespace RestaurantManagement.Api
+namespace RestaurantManagement.Api.Controllers
 {
     [Route(Constants.AppSettingKeys.DEFAULT_CONTROLLER_ROUTE)]
     [ApiController]

@@ -1,25 +1,25 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RestaurantManagement.Business.FoodServices.IngredientDetailService;
+using RestaurantManagement.Business.OrderServices.SupplierService;
 using RestaurantManagement.Commons;
-using RestaurantManagement.Data.RequestModels.Food;
+using RestaurantManagement.Data.RequestModels.Order;
 
-namespace RestaurantManagement.Api.FoodController
+namespace RestaurantManagement.Api.Controllers.OrderController
 {
     [Route(Constants.AppSettingKeys.DEFAULT_CONTROLLER_ROUTE)]
     [ApiController]
     [Authorize]
-    public class IngredientDetailController : ControllerBase
+    public class SupplierController : ControllerBase
     {
-        private readonly IIngredientDetailService _ingredientDetailService;
-        public IngredientDetailController(IIngredientDetailService ingredientDetailService)
+        private readonly ISupplierService _supplierService;
+        public SupplierController(ISupplierService supplierService)
         {
-            _ingredientDetailService = ingredientDetailService;
+            _supplierService = supplierService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetPagedByRecipeId([FromQuery] GetPagedIngredientDetailRequestModel model)
+        public async Task<IActionResult> GetPaged([FromQuery] GetPagedSupplierRequestModel model)
         {
-            var res = await _ingredientDetailService.GetPagedByRecipeId(model);
+            var res = await _supplierService.GetPaged(model);
             return Ok(res);
         }
         [HttpGet]
@@ -27,25 +27,24 @@ namespace RestaurantManagement.Api.FoodController
         {
             if (id < 0)
                 return Problem(detail: "Invalid ID", statusCode: 400);
-
-            var res = await _ingredientDetailService.GetById(id);
+            var res = await _supplierService.GetById(id);
             return Ok(res);
         }
         [HttpPost]
-        public async Task<IActionResult> CreateNew([FromBody] IngredientDetailRequestModel model)
+        public async Task<IActionResult> CreateNew([FromBody] SupplierRequestModel model)
         {
-            var res = await _ingredientDetailService.CreateNew(model);
+            var res = await _supplierService.CreateNew(model);
             if (!res)
                 return Problem(detail: "Addition unsuccessful", statusCode: 500);
             return Ok(res);
         }
         [HttpPut]
-        public async Task<IActionResult> Update([FromQuery] long id, [FromBody] UpdateIngredientDetailRequestModel model)
+        public async Task<IActionResult> Update([FromQuery] long id, [FromBody] SupplierRequestModel model)
         {
             if (id < 0)
                 return Problem(detail: "Invalid ID", statusCode: 400);
-            var res = await _ingredientDetailService.Update(id, model);
-            if(!res)
+            var res = await _supplierService.Update(id, model);
+            if (!res)
                 return Problem(detail: "Update unsuccessful", statusCode: 500);
             return Ok(res);
         }
@@ -54,7 +53,7 @@ namespace RestaurantManagement.Api.FoodController
         {
             if (id < 0)
                 return Problem(detail: "Invalid ID", statusCode: 400);
-            var res = await _ingredientDetailService.Delete(id);
+            var res = await _supplierService.Delete(id);
             if (!res)
                 return Problem(detail: "Delete unsuccessful", statusCode: 500);
             return Ok(res);

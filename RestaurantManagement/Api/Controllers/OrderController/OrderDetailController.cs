@@ -1,25 +1,26 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RestaurantManagement.Business.OrderServices;
+using RestaurantManagement.Business.OrderServices.OrderDetailService;
 using RestaurantManagement.Commons;
 using RestaurantManagement.Data.RequestModels.Order;
+using RestaurantManagement.Data.ResponseModels.Order;
 
-namespace RestaurantManagement.Api.OrderController
+namespace RestaurantManagement.Api.Controllers.OrderController
 {
     [Route(Constants.AppSettingKeys.DEFAULT_CONTROLLER_ROUTE)]
     [ApiController]
     [Authorize]
-    public class OrderController : ControllerBase
+    public class OrderDetailController : ControllerBase
     {
-        private readonly IOrderService _orderService;
-        public OrderController(IOrderService orderService)
+        private readonly IOrderDetailService _orderDetailService;
+        public OrderDetailController(IOrderDetailService orderDetailService)
         {
-            _orderService = orderService;
+            _orderDetailService = orderDetailService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetPaged([FromQuery] GetPagedOrderRequestModel model)
+        public async Task<IActionResult> GetPagedByOrderId([FromQuery] GetPagedOrderDetailRequestModel model)
         {
-            var res = await _orderService.GetPaged(model);
+            var res = await _orderDetailService.GetPagedByOrderId(model);
             return Ok(res);
         }
         [HttpGet]
@@ -27,23 +28,23 @@ namespace RestaurantManagement.Api.OrderController
         {
             if (id < 0)
                 return Problem(detail: "Invalid ID", statusCode: 400);
-            var res = await _orderService.GetById(id);
+            var res = await _orderDetailService.GetById(id);
             return Ok(res);
         }
         [HttpPost]
-        public async Task<IActionResult> CreateNew([FromBody] OrderRequestModel model)
+        public async Task<IActionResult> CreateNew([FromBody] OrderDetailRequestModel model)
         {
-            var res = await _orderService.CreateNew(model);
+            var res = await _orderDetailService.CreateNew(model);
             if (!res)
-                return Problem(detail: "Addition unsuccessful", statusCode: 500);
+                return Problem(detail: "Addition unsuccessful", statusCode: 400);
             return Ok(res);
         }
         [HttpPut]
-        public async Task<IActionResult> Update([FromQuery] long id,[FromBody]OrderRequestModel model)
+        public async Task<IActionResult> Update([FromQuery] long id, [FromBody] UpdateOrderDetailRequestModel model)
         {
             if (id < 0)
                 return Problem(detail: "Invalid ID", statusCode: 400);
-            var res = await _orderService.Update(id, model);
+            var res = await _orderDetailService.Update(id, model);
             if (!res)
                 return Problem(detail: "Update unsuccessful", statusCode: 500);
             return Ok(res);
@@ -53,7 +54,7 @@ namespace RestaurantManagement.Api.OrderController
         {
             if (id < 0)
                 return Problem(detail: "Invalid ID", statusCode: 400);
-            var res =await _orderService.Delete(id);
+            var res = await _orderDetailService.Delete(id);
             if (!res)
                 return Problem(detail: "Delete unsuccessful", statusCode: 500);
             return Ok(res);

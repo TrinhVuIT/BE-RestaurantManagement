@@ -1,26 +1,25 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RestaurantManagement.Business.OrderServices.OrderDetailService;
+using RestaurantManagement.Business.OrderServices.StockOutService;
 using RestaurantManagement.Commons;
 using RestaurantManagement.Data.RequestModels.Order;
-using RestaurantManagement.Data.ResponseModels.Order;
 
-namespace RestaurantManagement.Api.OrderController
+namespace RestaurantManagement.Api.Controllers.OrderController
 {
     [Route(Constants.AppSettingKeys.DEFAULT_CONTROLLER_ROUTE)]
     [ApiController]
     [Authorize]
-    public class OrderDetailController : ControllerBase
+    public class StockOutController : ControllerBase
     {
-        private readonly IOrderDetailService _orderDetailService;
-        public OrderDetailController(IOrderDetailService orderDetailService)
+        private readonly IStockOutService _stockOutService;
+        public StockOutController(IStockOutService stockOutService)
         {
-            _orderDetailService = orderDetailService;
+            _stockOutService = stockOutService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetPagedByOrderId([FromQuery] GetPagedOrderDetailRequestModel model)
+        public async Task<IActionResult> Getpaged([FromQuery] GetPagedStockOutRequestModel model)
         {
-            var res = await _orderDetailService.GetPagedByOrderId(model);
+            var res = await _stockOutService.GetPaged(model);
             return Ok(res);
         }
         [HttpGet]
@@ -28,23 +27,23 @@ namespace RestaurantManagement.Api.OrderController
         {
             if (id < 0)
                 return Problem(detail: "Invalid ID", statusCode: 400);
-            var res = await _orderDetailService.GetById(id);
+            var res = await _stockOutService.GetById(id);
             return Ok(res);
         }
         [HttpPost]
-        public async Task<IActionResult> CreateNew([FromBody] OrderDetailRequestModel model)
+        public async Task<IActionResult> CreateNew([FromBody] StockOutRequestModel model)
         {
-            var res = await _orderDetailService.CreateNew(model);
+            var res = await _stockOutService.CreateNew(model);
             if (!res)
-                return Problem(detail: "Addition unsuccessful", statusCode: 400);
+                return Problem(detail: "Addition unsuccessful", statusCode: 500);
             return Ok(res);
         }
         [HttpPut]
-        public async Task<IActionResult> Update([FromQuery] long id, [FromBody] UpdateOrderDetailRequestModel model)
+        public async Task<IActionResult> Update([FromQuery] long id, [FromBody] StockOutRequestModel model)
         {
             if (id < 0)
                 return Problem(detail: "Invalid ID", statusCode: 400);
-            var res = await _orderDetailService.Update(id, model);
+            var res = await _stockOutService.Update(id, model);
             if (!res)
                 return Problem(detail: "Update unsuccessful", statusCode: 500);
             return Ok(res);
@@ -54,7 +53,7 @@ namespace RestaurantManagement.Api.OrderController
         {
             if (id < 0)
                 return Problem(detail: "Invalid ID", statusCode: 400);
-            var res = await _orderDetailService.Delete(id);
+            var res = await _stockOutService.Delete(id);
             if (!res)
                 return Problem(detail: "Delete unsuccessful", statusCode: 500);
             return Ok(res);

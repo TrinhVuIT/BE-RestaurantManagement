@@ -6,7 +6,7 @@ using RestaurantManagement.Commons;
 using RestaurantManagement.Data.RequestModels.User;
 using RestaurantManagement.Data.ResponseModels.User;
 
-namespace RestaurantManagement.Api
+namespace RestaurantManagement.Api.Controllers
 {
     [Route(Constants.AppSettingKeys.DEFAULT_CONTROLLER_ROUTE)]
     [ApiController]
@@ -23,7 +23,7 @@ namespace RestaurantManagement.Api
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             var result = await _authService.Register(model);
-            if(!result)
+            if (!result)
                 return Problem($"Register invalid to save", $"api/auth/Register", 400);
             return Ok(result);
         }

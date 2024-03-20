@@ -4,7 +4,7 @@ using RestaurantManagement.Business.PurchaseOrderService.PurchaseOrderFoodServic
 using RestaurantManagement.Commons;
 using RestaurantManagement.Data.RequestModels.PurchaseOrder;
 
-namespace RestaurantManagement.Api.PurchaseOrderController
+namespace RestaurantManagement.Api.Controllers.PurchaseOrderController
 {
     [Route(Constants.AppSettingKeys.DEFAULT_CONTROLLER_ROUTE)]
     [ApiController]
