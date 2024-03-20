@@ -1,6 +1,6 @@
 ﻿using RestaurantManagement.Commons;
 
-namespace RestaurantManagement.Data
+namespace RestaurantManagement.Data.Entities
 {
     public class FileUpload : BaseEntityCommons
     {
@@ -10,6 +10,6 @@ namespace RestaurantManagement.Data
         public string FileSize { get; set; }
         public string FilePath { get; set; }
         public string FileKey { get; set; }
-        public string FileDescription { get; set; }
+        public string? FileDescription { get; set; }
     }
 }

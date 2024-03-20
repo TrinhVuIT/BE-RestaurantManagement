@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using RestaurantManagement.Commons;
 using RestaurantManagement.Data;
 using RestaurantManagement.Data.Entities;
 using static RestaurantManagement.Commons.Constants;

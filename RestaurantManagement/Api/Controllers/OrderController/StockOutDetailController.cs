@@ -4,7 +4,7 @@ using RestaurantManagement.Business.OrderServices.StockOutDetailService;
 using RestaurantManagement.Commons;
 using RestaurantManagement.Data.RequestModels.Order;
 
-namespace RestaurantManagement.Api.OrderController
+namespace RestaurantManagement.Api.Controllers.OrderController
 {
     [Route(Constants.AppSettingKeys.DEFAULT_CONTROLLER_ROUTE)]
     [ApiController]
@@ -23,7 +23,7 @@ namespace RestaurantManagement.Api.OrderController
             return Ok(res);
         }
         [HttpGet]
-        public async Task<IActionResult> GetById([FromQuery]long id)
+        public async Task<IActionResult> GetById([FromQuery] long id)
         {
             if (id < 0)
                 return Problem(detail: "Invalid ID", statusCode: 400);
@@ -54,8 +54,8 @@ namespace RestaurantManagement.Api.OrderController
             if (id < 0)
                 return Problem(detail: "Invalid ID", statusCode: 400);
             var res = await _stockOutDetailService.Delete(id);
-            if(!res)
-                return Problem(detail:"Delete unsuccessful",statusCode: 500);
+            if (!res)
+                return Problem(detail: "Delete unsuccessful", statusCode: 500);
             return Ok(res);
         }
     }

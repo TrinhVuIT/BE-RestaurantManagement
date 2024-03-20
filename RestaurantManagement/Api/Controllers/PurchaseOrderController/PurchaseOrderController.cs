@@ -1,25 +1,25 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RestaurantManagement.Business.OrderServices.SupplierService;
+using RestaurantManagement.Business.PurchaseOrderService;
 using RestaurantManagement.Commons;
-using RestaurantManagement.Data.RequestModels.Order;
+using RestaurantManagement.Data.RequestModels.PurchaseOrder;
 
-namespace RestaurantManagement.Api.OrderController
+namespace RestaurantManagement.Api.Controllers.PurchaseOrderController
 {
     [Route(Constants.AppSettingKeys.DEFAULT_CONTROLLER_ROUTE)]
     [ApiController]
     [Authorize]
-    public class SupplierController : ControllerBase
+    public class PurchaseOrderController : ControllerBase
     {
-        private readonly ISupplierService _supplierService;
-        public SupplierController(ISupplierService supplierService)
+        private readonly IPurchaseOrderService _purchaseOrderService;
+        public PurchaseOrderController(IPurchaseOrderService purchaseOrderService)
         {
-            _supplierService = supplierService;
+            _purchaseOrderService = purchaseOrderService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetPaged([FromQuery] GetPagedSupplierRequestModel model)
+        public async Task<IActionResult> GetPaged([FromQuery] GetPagedPurchaseOrderRequestModel model)
         {
-            var res = await _supplierService.GetPaged(model);
+            var res = await _purchaseOrderService.GetPaged(model);
             return Ok(res);
         }
         [HttpGet]
@@ -27,25 +27,25 @@ namespace RestaurantManagement.Api.OrderController
         {
             if (id < 0)
                 return Problem(detail: "Invalid ID", statusCode: 400);
-            var res = await _supplierService.GetById(id);
+            var res = await _purchaseOrderService.GetById(id);
             return Ok(res);
         }
         [HttpPost]
-        public async Task<IActionResult> CreateNew([FromBody] SupplierRequestModel model)
+        public async Task<IActionResult> CreateNew([FromBody] PurchaseOrderRequestModel model)
         {
-            var res = await _supplierService.CreateNew(model);
+            var res = await _purchaseOrderService.CreateNew(model);
             if (!res)
                 return Problem(detail: "Addition unsuccessful", statusCode: 500);
             return Ok(res);
         }
         [HttpPut]
-        public async Task<IActionResult> Update([FromQuery] long id, [FromBody] SupplierRequestModel model)
+        public async Task<IActionResult> Update([FromQuery] long id, [FromBody] PurchaseOrderRequestModel model)
         {
             if (id < 0)
                 return Problem(detail: "Invalid ID", statusCode: 400);
-            var res = await _supplierService.Update(id, model);
-            if(!res)
-                return Problem(detail:"Update unsuccessful", statusCode: 500);
+            var res = await _purchaseOrderService.Update(id, model);
+            if (!res)
+                return Problem(detail: "Update unsuccessful", statusCode: 500);
             return Ok(res);
         }
         [HttpDelete]
@@ -53,7 +53,7 @@ namespace RestaurantManagement.Api.OrderController
         {
             if (id < 0)
                 return Problem(detail: "Invalid ID", statusCode: 400);
-            var res = await _supplierService.Delete(id);
+            var res = await _purchaseOrderService.Delete(id);
             if (!res)
                 return Problem(detail: "Delete unsuccessful", statusCode: 500);
             return Ok(res);
