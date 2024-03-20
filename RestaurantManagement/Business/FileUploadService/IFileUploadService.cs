@@ -1,4 +1,4 @@
-﻿using RestaurantManagement.Data;
+﻿using RestaurantManagement.Data.Entities;
 
 namespace RestaurantManagement.Business.FileUploadService
 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantManagement.Business.FileUploadService;
-using RestaurantManagement.Data;
+using RestaurantManagement.Data.Entities;
 using System.ComponentModel.DataAnnotations;
 using System.IO.Compression;
 using System.Security.Claims;
@@ -61,7 +61,7 @@ namespace RestaurantManagement.Api.FileUploadController
         }
 
         [HttpGet]
-        public async Task<IActionResult> DownloadZipAsync([FromRoute] string key)
+        public async Task<IActionResult> DownloadZipAsync([FromQuery] string key)
         {
             var fileDownloads = new List<FileUpload>();
             var path = _uploadService.GetFiles(key).ToList();

@@ -51,7 +51,7 @@ namespace RestaurantManagement.Business.AddressService
         public async Task<List<Provinces>> GetListProvinces(long? countryId)
         {
             if (countryId != null)
-                return await _context.Provinces.Include(x => x.Country).Where(x => x.Country.Id == countryId).ToListAsync();
+                return await _context.Provinces.Include(x => x.Country).Where(x => x.Country!.Id == countryId).ToListAsync();
             return await _context.Provinces.ToListAsync();
         }
 
@@ -92,7 +92,7 @@ namespace RestaurantManagement.Business.AddressService
 
             using (ExcelPackage package = new ExcelPackage(ms))
             {
-                ExcelWorksheet sheet = package.Workbook.Worksheets[0];
+                ExcelWorksheet sheet = package.Workbook.Worksheets[(int)classification - 1];
 
                 var start = sheet.Dimension.Start;
                 var end = sheet.Dimension.End;
@@ -139,7 +139,7 @@ namespace RestaurantManagement.Business.AddressService
                             DistrictNameVNI = sheet.Cells[r, firstCol + 1].Value?.ToString()!,
                             DistrictNameEN = sheet.Cells[r, firstCol + 2].Value?.ToString() ?? "",
                             Level = sheet.Cells[r, firstCol + 3].Value?.ToString() ?? "",
-                            Province = _context.Provinces.FirstOrDefault(x => x.ProvinceCode == provinceCode)!
+                            Province = _context.Provinces.FirstOrDefault(x => x.ProvinceCode == provinceCode)!,
                         };
                         listDistrict.Add(model);
                     }
@@ -154,13 +154,15 @@ namespace RestaurantManagement.Business.AddressService
                         var wardCode = sheet.Cells[r, firstCol].Value?.ToString();
                         if(string.IsNullOrEmpty(wardCode)) break;
                         var districtCode = sheet.Cells[r, firstCol + 4].Value?.ToString();
+                        var provinceCode = sheet.Cells[r, firstCol + 6].Value?.ToString();
                         Wards model = new Wards
                         {
                             WardCode = wardCode,
                             WardNameVNI = sheet.Cells[r, firstCol + 1].Value?.ToString()!,
                             WardNameEN = sheet.Cells[r, firstCol + 2].Value?.ToString() ?? "",
                             Level = sheet.Cells[r, firstCol + 3].Value.ToString() ?? "",
-                            District = _context.Districts.FirstOrDefault(x => x.DistrictCode == districtCode)!
+                            District = _context.Districts.FirstOrDefault(x => x.DistrictCode == districtCode)!,
+                            Province = _context.Provinces.FirstOrDefault(x => x.ProvinceCode == provinceCode)!,
                         };
                         listWards.Add(model);
                     }
