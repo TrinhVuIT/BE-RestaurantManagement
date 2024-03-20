@@ -63,26 +63,17 @@ namespace RestaurantManagement.Api.FileUploadController
         [HttpGet]
         public async Task<IActionResult> DownloadZipAsync([FromQuery] string key)
         {
-            var fileDownloads = new List<FileUpload>();
-            var path = _uploadService.GetFiles(key).ToList();
-            if (path == null || path.Count == 0)
+            var files = _uploadService.GetFiles(key).ToList();
+            if (files == null || files.Count == 0)
                 return new BadRequestObjectResult(FileConst.FILE_NOT_FOUND);
 
-            if (!System.IO.File.Exists(path[0].FilePath))
+            if (!System.IO.File.Exists(files[0].FilePath))
                 return new BadRequestObjectResult(FileConst.FILE_NOT_FOUND);
-
-
-            fileDownloads.Add(new FileUpload
-            {
-                FilePath = path[0].FilePath,
-                FileName = Path.GetFileName(path[0].FilePath),
-                OriginalName = path[0].OriginalName
-            });
 
             var memory = new MemoryStream();
             using (var zipArchive = new ZipArchive(memory, ZipArchiveMode.Create, true))
             {
-                foreach (var file in fileDownloads)
+                foreach (var file in files)
                 {
                     var enntry = zipArchive.CreateEntry(file.OriginalName);
                     using var entryStream = enntry.Open();
@@ -91,8 +82,9 @@ namespace RestaurantManagement.Api.FileUploadController
                 }
             }
             memory.Position = 0;
+            var fileName = files[0].OriginalName.Split(".");
 
-            return File(memory, FileConst.OCTET_STREAM, $"{path[0].OriginalName}.zip");
+            return File(memory, FileConst.OCTET_STREAM, $"{fileName[0]}.zip");
         }
     }
 }
