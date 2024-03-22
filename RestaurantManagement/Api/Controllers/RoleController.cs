@@ -15,6 +15,7 @@ namespace RestaurantManagement.Api.Controllers
         {
             _roleService = roleService;
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateUserRole([FromBody]UserRoleInputModel model)
         {
@@ -25,6 +26,7 @@ namespace RestaurantManagement.Api.Controllers
             }
             return Ok(res);
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateRole([FromBody] RoleInputModel model)
         {
