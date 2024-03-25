@@ -61,7 +61,7 @@ namespace RestaurantManagement.Business.BaseService
             {
                 Id = Guid.NewGuid(),
                 JwtId = token.Id,
-                UserId = user.Id,
+                UserId = user!.Id,
                 Token = refreshToken,
                 IsUsed = false,
                 IsRevoked = false,
@@ -178,8 +178,8 @@ namespace RestaurantManagement.Business.BaseService
                 //create new token
                 var user = await _context.ApplicationUser.SingleOrDefaultAsync(nd => nd.Id == storedToken.UserId);
                 var userRoles = await _userManager.GetRolesAsync(user!);
-                var token = await GenerateTokenUser(user, userRoles);
-                await _signInManager.RefreshSignInAsync(user);
+                var token = await GenerateTokenUser(user!, userRoles);
+                await _signInManager.RefreshSignInAsync(user!);
                 return new ApiResponse
                 {
                     Success = true,

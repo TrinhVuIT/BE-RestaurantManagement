@@ -9,7 +9,10 @@ using static RestaurantManagement.Commons.Constants;
 using RestaurantManagement.Data;
 using RestaurantManagement.Data.Entities;
 using System.Text;
+using Quartz;
+using Quartz.Impl;
 using Microsoft.AspNetCore.Diagnostics;
+using RestaurantManagement.Api.JobSchedule;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -99,6 +102,32 @@ builder.Services.AddTransient<JwtMiddleWare>();
 builder.Services.ServiceRegister();
 builder.Services.AddProblemDetails();
 
+builder.Services.AddQuartz(q =>
+{
+    var jobKey1 = new JobKey(JobScheduleOptions.DeleteRefreshTokenJob);
+    q.AddJob<DeleteRefreshTokenJob>(opts => opts.WithIdentity(jobKey1));
+    q.AddTrigger(opts => opts
+    .ForJob(jobKey1)
+    .WithIdentity($"{jobKey1}-trigger")
+    .StartNow()
+    .WithCronSchedule(builder.Configuration.GetSection("JobScheduleOptions:CronSchedule").Value ?? "0 0 1 * * ?"));
+});
+
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+builder.Services.AddSingleton<IScheduler>(provider =>
+{
+    // Khởi tạo và cấu hình IScheduler
+    var schedulerFactory = new StdSchedulerFactory();
+    var scheduler = schedulerFactory.GetScheduler().Result;
+    scheduler.Start().Wait();
+    // Đợi một khoảng thời gian để công việc chạy
+    Task.Delay(TimeSpan.FromMinutes(1));
+
+    // Dừng Scheduler
+    scheduler.Shutdown();
+    return scheduler;
+});
+builder.Services.AddHostedService<QuartzHostedService>();
 builder.Services.AddSignalR();
 var app = builder.Build();
 

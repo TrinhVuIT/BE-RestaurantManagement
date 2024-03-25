@@ -33,6 +33,7 @@ namespace RestaurantManagement.Data
         public DbSet<StockOutDetail> StockOutDetail { get; set; }
         public DbSet<PurchaseOrderFood> PurchaseOrderFood { get; set; }
         public DbSet<FileUpload> FileUpload { get; set; }
+        public DbSet<LogsSystem> LogsSystem { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.EnableSensitiveDataLogging();
