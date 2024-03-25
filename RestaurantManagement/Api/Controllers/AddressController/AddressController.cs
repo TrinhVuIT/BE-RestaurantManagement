@@ -46,6 +46,12 @@ namespace RestaurantManagement.Api.Controllers.AddressController
             return Ok(res);
         }
 
+        /// <summary>
+        /// SeedData ProvincesDistrictsWard
+        /// </summary>
+        /// <param name="classification">1 = Provinces, 2 = Districts, 3 = Wards</param>
+        /// <param name="file">File Excel</param>
+        /// <returns>Save Result dbo.Provinces, dbo.Districts, dbo.Ward</returns>
         [HttpPost]
         [DisableRequestSizeLimit]
         public async Task<IActionResult> UploadProvincesDistrictsWardFromFileExcel(Classification classification, IFormFile file)

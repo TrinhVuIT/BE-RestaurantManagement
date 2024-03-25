@@ -39,5 +39,10 @@
             public const string FILE_NOT_FOUND = "File not found";
             public const string OCTET_STREAM = "application/octet-stream";
         }
+        public class JobScheduleOptions
+        {
+            public const string NameSystemJob = "SystemJobs";
+            public const string DeleteRefreshTokenJob = "DeleteRefreshTokenJob";
+        }
     }
 }

@@ -1,15 +1,19 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Quartz;
+using Quartz.Impl;
 using RestaurantManagement.Api.Extensions;
+using RestaurantManagement.Api.JobSchedule;
 using RestaurantManagement.Api.MiddleWare;
-using static RestaurantManagement.Commons.Constants;
 using RestaurantManagement.Data;
 using RestaurantManagement.Data.Entities;
+using System.Reflection;
 using System.Text;
-using Microsoft.AspNetCore.Diagnostics;
+using static RestaurantManagement.Commons.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +60,10 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    //hien thi mo ta tren Swagger
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -99,6 +107,32 @@ builder.Services.AddTransient<JwtMiddleWare>();
 builder.Services.ServiceRegister();
 builder.Services.AddProblemDetails();
 
+builder.Services.AddQuartz(q =>
+{
+    var jobKey1 = new JobKey(JobScheduleOptions.DeleteRefreshTokenJob);
+    q.AddJob<DeleteRefreshTokenJob>(opts => opts.WithIdentity(jobKey1));
+    q.AddTrigger(opts => opts
+    .ForJob(jobKey1)
+    .WithIdentity($"{jobKey1}-trigger")
+    .StartNow()
+    .WithCronSchedule(builder.Configuration.GetSection("JobScheduleOptions:CronSchedule").Value ?? "0 0 1 * * ?"));
+});
+
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+builder.Services.AddSingleton<IScheduler>(provider =>
+{
+    // Khởi tạo và cấu hình IScheduler
+    var schedulerFactory = new StdSchedulerFactory();
+    var scheduler = schedulerFactory.GetScheduler().Result;
+    scheduler.Start().Wait();
+    // Đợi một khoảng thời gian để công việc chạy
+    Task.Delay(TimeSpan.FromMinutes(1));
+
+    // Dừng Scheduler
+    scheduler.Shutdown();
+    return scheduler;
+});
+builder.Services.AddHostedService<QuartzHostedService>();
 builder.Services.AddSignalR();
 var app = builder.Build();
 
