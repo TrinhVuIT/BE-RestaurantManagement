@@ -47,7 +47,7 @@ namespace RestaurantManagement.Api.Controllers
         public async Task<IActionResult> ChangePasswordAsync([FromBody] ChangePasswordModel model)
         {
             var userName = User?.Identity?.Name;
-            var result = await _authService.ChangePassword(userName, model);
+            var result = await _authService.ChangePassword(userName!, model);
 
             return Ok(result);
         }

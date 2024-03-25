@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using RestaurantManagement.Business.BaseService;
 using RestaurantManagement.Business.EmailCofigServices;
 using RestaurantManagement.Commons;
+using RestaurantManagement.Data;
 using RestaurantManagement.Data.Entities;
 using RestaurantManagement.Data.RequestModels.User;
 using RestaurantManagement.Data.ResponseModels.User;
@@ -13,12 +15,14 @@ namespace RestaurantManagement.Business.AuthService
 {
     public class AuthService : IAuthService
     {
+        private readonly DataContext _context;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IBaseService _baseService;
         private readonly IEmailConfigServices _emailConfigServices;
-        public AuthService(UserManager<User> userManager, IEmailConfigServices emailConfigServices, IBaseService baseService, SignInManager<User> signInManager)
+        public AuthService(DataContext context, UserManager<User> userManager, IEmailConfigServices emailConfigServices, IBaseService baseService, SignInManager<User> signInManager)
         {
+            _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
             _baseService = baseService;
@@ -32,14 +36,26 @@ namespace RestaurantManagement.Business.AuthService
             if (userExist != null)
                 throw new Exception(string.Format(Constants.ExceptionMessage.ALREADY_EXIST, nameof(model.UserName)));
 
+            long codeUser = GetCodeUserLatest().Result != null ? long.Parse(GetCodeUserLatest().Result!) : 0;
+            if (codeUser > 0)
+            {
+                var codeUserExist = await _context.ApplicationUser
+                    .AnyAsync(x => !x.IsDeleted && x.IsActive && x.Code == codeUser.ToString());
+
+                if (codeUserExist)
+                    codeUser++;
+            }
+
             User user = new User()
             {
                 Email = model.Email,
+                Code = codeUser.ToString("D7"),
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = model.UserName,
                 NgayTao = DateTime.Now,
                 NgayCapNhat = DateTime.Now,
-                IsActive = true,
+                NguoiTao = Constants.JobScheduleOptions.NameSystemJob,
+                NguoiCapNhat = Constants.JobScheduleOptions.NameSystemJob
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -47,6 +63,7 @@ namespace RestaurantManagement.Business.AuthService
                 throw new Exception(string.Format(Constants.ExceptionMessage.FAILED, nameof(model.UserName)));
             return result.Succeeded;
         }
+
         public async Task<LoginResponseModel> Login(LoginModel model)
         {
             var user = await _userManager.FindByNameAsync(model.Username);
@@ -201,6 +218,12 @@ namespace RestaurantManagement.Business.AuthService
             }
 
             return true;
+        }
+
+        private async Task<string?> GetCodeUserLatest()
+        {
+            var result = await _userManager.Users.OrderByDescending(u => u.NgayTao).FirstOrDefaultAsync();
+            return result?.Code;
         }
     }
 }

@@ -1,18 +1,19 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using RestaurantManagement.Api.Extensions;
-using RestaurantManagement.Api.MiddleWare;
-using static RestaurantManagement.Commons.Constants;
-using RestaurantManagement.Data;
-using RestaurantManagement.Data.Entities;
-using System.Text;
 using Quartz;
 using Quartz.Impl;
-using Microsoft.AspNetCore.Diagnostics;
+using RestaurantManagement.Api.Extensions;
 using RestaurantManagement.Api.JobSchedule;
+using RestaurantManagement.Api.MiddleWare;
+using RestaurantManagement.Data;
+using RestaurantManagement.Data.Entities;
+using System.Reflection;
+using System.Text;
+using static RestaurantManagement.Commons.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +60,10 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    //hien thi mo ta tren Swagger
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
