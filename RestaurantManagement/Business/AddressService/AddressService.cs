@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
-using RestaurantManagement.Commons;
 using RestaurantManagement.Data;
 using RestaurantManagement.Data.Entities.Address;
 using RestaurantManagement.Data.RequestModels;
 using System.ComponentModel.DataAnnotations;
+using static RestaurantManagement.Commons.Enums;
 
 namespace RestaurantManagement.Business.AddressService
 {
@@ -70,11 +70,11 @@ namespace RestaurantManagement.Business.AddressService
             }).ToList();
         }
 
-        public async Task<bool> UploadProvincesDistrictsWardFromFileExcel(Enums.Classification classification, IFormFile file)
+        public async Task<bool> UploadProvincesDistrictsWardFromFileExcel(Classification classification, IFormFile file)
         {
-            if ((classification == Enums.Classification.Provinces && _context.Provinces.Any())
-                || (classification == Enums.Classification.Districts && _context.Districts.Any())
-                    || (classification == Enums.Classification.Wards && _context.Wards.Any()))
+            if ((classification == Classification.Provinces && _context.Provinces.Any())
+                || (classification == Classification.Districts && _context.Districts.Any())
+                    || (classification == Classification.Wards && _context.Wards.Any()))
                 throw new ValidationException("The data is already available, so there is no need for an update.");
 
             int firstCol = 0;
@@ -103,7 +103,7 @@ namespace RestaurantManagement.Business.AddressService
                 lastCol = end.Column;
                 lastRow = end.Row;
 
-                if (classification == Enums.Classification.Provinces)
+                if (classification == Classification.Provinces)
                 {
                     List<Provinces> listProvince = new List<Provinces>();
                     for (int r = firstRow + 1; r <= lastRow; r++)
@@ -125,7 +125,7 @@ namespace RestaurantManagement.Business.AddressService
                     await _context.Provinces.AddRangeAsync(listProvince);
                 }
 
-                if (classification == Enums.Classification.Districts)
+                if (classification == Classification.Districts)
                 {
                     List<Districts> listDistrict = new List<Districts>();
                     for (int r = firstRow + 1; r <= lastRow; r++)
@@ -146,7 +146,7 @@ namespace RestaurantManagement.Business.AddressService
                     await _context.Districts.AddRangeAsync(listDistrict);
                 }
 
-                if(classification == Enums.Classification.Wards)
+                if(classification == Classification.Wards)
                 {
                     List<Wards> listWards = new List<Wards>();
                     for(int r = firstRow + 1; r <= lastRow; r++)

@@ -60,10 +60,12 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    //hien thi mo ta tren Swagger
+    //hien thi mo ta tren Swagger va su dung Enum trong mo ta cua API
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+    options.UseInlineDefinitionsForEnums();
 
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "RestaurantHRM API", Version = "v1" });
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,

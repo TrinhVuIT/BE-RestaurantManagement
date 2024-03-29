@@ -89,7 +89,7 @@ namespace RestaurantManagement.Business.FoodServices
                     query = query.ApplyPaging(model.PageNo, model.PageSize, out totalItems);
                 }
                 List<Food> result = query.ToList();
-                return new BasePaginationResponseModel<Food>(model.PageSize, totalItems, result, totalItems);
+                return new BasePaginationResponseModel<Food>(model.PageNo, model.PageSize, result, totalItems);
             }
             catch (Exception ex)
             {
